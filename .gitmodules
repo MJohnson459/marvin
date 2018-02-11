@@ -1,0 +1,3 @@
+[submodule "external/rosdistro"]
+	path = external/rosdistro
+	url = git@github.com:ros/rosdistro.git

@@ -1,18 +1,8 @@
 -- Your SQL goes here
-CREATE TYPE repository_status AS ENUM (
-  'maintained',
-  'developed'
-);
-
-CREATE TYPE supported_vcs AS ENUM (
-  'git',
-  'hg',
-  'svn'
-);
 
 CREATE TABLE documentation (
   id SERIAL PRIMARY KEY,
-  type supported_vcs NOT NULL,
+  vcs VARCHAR NOT NULL,
   url VARCHAR NOT NULL,
   version VARCHAR NOT NULL
 );
@@ -31,14 +21,14 @@ CREATE TABLE releases (
 
 CREATE TABLE sources (
   id SERIAL PRIMARY KEY,
-  type supported_vcs NOT NULL,
+  vcs VARCHAR NOT NULL,
   url VARCHAR NOT NULL,
   version VARCHAR NOT NULL
 );
 
 CREATE TABLE package_releases (
-  package SERIAL REFERENCES packages,
-  release SERIAL REFERENCES releases
+  package_id SERIAL REFERENCES packages,
+  release_id SERIAL REFERENCES releases
 );
 
 CREATE TABLE repositories (
@@ -46,5 +36,5 @@ CREATE TABLE repositories (
   documentation SERIAL REFERENCES documentation,
   release SERIAL REFERENCES releases,
   source SERIAL REFERENCES sources,
-  status repository_status
+  status VARCHAR
 );

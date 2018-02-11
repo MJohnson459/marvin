@@ -6,6 +6,3 @@ DROP TABLE IF EXISTS sources;
 DROP TABLE IF EXISTS releases;
 DROP TABLE IF EXISTS packages;
 DROP TABLE IF EXISTS documentation;
-
-DROP TYPE IF EXISTS repository_status;
-DROP TYPE IF EXISTS supported_vcs;

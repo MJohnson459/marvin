@@ -11,25 +11,24 @@ pub enum SupportedVcs {
     Svn,
 }
 
-#[derive(Queryable)]
+#[derive(Queryable, Debug)]
 pub struct Documentation {
-    id: i32,
-    vcs: String,
-    url: String,
-    version: String,
+    pub id: i32,
+    pub vcs: String,
+    pub url: String,
+    pub version: String,
 }
 
 #[derive(Insertable)]
 #[table_name="documentation"]
 pub struct NewDocumentation<'a> {
-    vcs: &'a str,
-    url: &'a str,
-    version: &'a str,
+    pub vcs: &'a str,
+    pub url: &'a str,
+    pub version: &'a str,
 }
 
 
-#[derive(Insertable, Queryable)]
-#[table_name="packages"]
+#[derive(Queryable)]
 pub struct Package {
     id: i32,
     name: String,

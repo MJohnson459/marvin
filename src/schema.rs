@@ -17,7 +17,6 @@ table! {
 table! {
     releases (id) {
         id -> Int4,
-        tags -> Nullable<Varchar>,
         url -> Nullable<Varchar>,
         version -> Varchar,
     }
@@ -43,6 +42,15 @@ table! {
 }
 
 table! {
+    tags (id) {
+        id -> Int4,
+        release_id -> Int4,
+        name -> Varchar,
+        value -> Varchar,
+    }
+}
+
+table! {
     package_releases (package_id, release_id) {
         package_id -> Int4,
         release_id -> Int4,
@@ -59,4 +67,5 @@ allow_tables_to_appear_in_same_query!(
     releases,
     repositories,
     sources,
+    tags,
 );

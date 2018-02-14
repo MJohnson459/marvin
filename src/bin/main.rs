@@ -21,5 +21,5 @@ fn main() {
     let path = Path::new("./external/rosdistro/kinetic/distribution.yaml");
     println!("Path = {:?}", fs::canonicalize(&path));
     let distribution = load_distribution(&path.to_str().unwrap()).unwrap();
-    println!("distribution = {:#?}", distribution);
+    //println!("distribution = {:#?}", distribution);
 }

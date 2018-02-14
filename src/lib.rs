@@ -26,34 +26,18 @@ pub fn establish_connection() -> PgConnection {
         .expect(&format!("Error connecting to {}", database_url))
 }
 
-//use models::*;
-
-//pub fn create_documentation<'a>(conn: &PgConnection, vcs: &'a str, url: &'a str, version: &'a str) -> Documentation {
-    //use schema::documentation;
-
-    //let new_docs = NewDocumentation {
-        //vcs: vcs,
-        //url: url,
-        //version: version,
-    //};
-
-    //diesel::insert_into(documentation::table)
-        //.values(&new_docs)
-        //.get_result(conn)
-        //.expect("Error saving new documentation")
-//}
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct Distribution {
+pub struct EncodableDistribution {
     release_platforms: Map<String, Vec<String>>,
-    repositories: Map<String, Repository>,
+    repositories: Map<String, EncodableRepository>,
     #[serde(rename = "type")]
     type_name: String,
     version: u32,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-struct Documentation {
+struct EncodableDocumentation {
     #[serde(rename = "type")]
     vcs: String,
     url: String,
@@ -61,20 +45,20 @@ struct Documentation {
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-struct Tag {
+struct EncodableTag {
     release: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-struct Release {
+struct EncodableRelease {
     packages: Option<Vec<String>>,
-    tags: Tag,
+    tags: EncodableTag,
     url: String,
     version: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-struct Source {
+struct EncodableSource {
     #[serde(rename = "type")]
     vcs: String,
     url: String,
@@ -82,19 +66,19 @@ struct Source {
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-struct Repository {
-    doc: Option<Documentation>,
-    release: Option<Release>,
-    source: Option<Source>,
+struct EncodableRepository {
+    doc: Option<EncodableDocumentation>,
+    release: Option<EncodableRelease>,
+    source: Option<EncodableSource>,
     status: Option<String>,
 }
 
 
-pub fn load_distribution(path: &str) -> Result<Distribution, String> {
+pub fn load_distribution(path: &str) -> Result<EncodableDistribution, String> {
     let contents = read_distribution(path).unwrap();
 
 
-    let distribution: Distribution = serde_yaml::from_str(&contents).unwrap();
+    let distribution: EncodableDistribution = serde_yaml::from_str(&contents).unwrap();
 
     Ok(distribution)
 }
@@ -110,12 +94,48 @@ pub fn read_distribution(path: &str) -> io::Result<String> {
     Ok(contents)
 }
 
+fn insert_documentation(conn: &PgConnection, documentation: &Option<EncodableDocumentation>) -> Option<i32> {
+    use schema::documentation;
+    use models::{Documentation, NewDocumentation};
+    if let Some(ref doc) = *documentation {
+        let new_doc = NewDocumentation {
+            vcs: doc.vcs.as_str(),
+            url: doc.url.as_str(),
+            version: doc.version.as_str(),
+        };
+
+        let result: diesel::QueryResult<Documentation> = diesel::insert_into(documentation::table)
+            .values(&new_doc)
+            .get_result(conn);
+
+        match result {
+                Ok(val) => Some(val.id),
+                Err(_) => None,
+        };
+    }
+
+    None
+}
+
+pub fn push_distribution(conn: &PgConnection, distribution: &EncodableDistribution) {
+
+    for (key, value) in distribution.repositories.iter() {
+        let new_doc = insert_documentation(conn, &value.doc);
+
+    }
+
+    //diesel::insert_into(documentation::table)
+        //.values(&new_docs)
+        //.get_result(conn)
+        //.expect("Error saving new documentation")
+}
+
 pub fn add_repository() {
 
-    let new_repo = Repository {
-        doc: Some(Documentation::default()),
-        release: Some(Release::default()),
-        source: Some(Source::default()),
+    let new_repo = EncodableRepository {
+        doc: Some(EncodableDocumentation::default()),
+        release: Some(EncodableRelease::default()),
+        source: Some(EncodableSource::default()),
         status: Some("whatup".to_string()),
     };
 
@@ -153,7 +173,7 @@ pub fn add_repository() {
     version: kinetic
   status: developed";
 
-    let deserialized: Repository = serde_yaml::from_str(&y_rep).unwrap();
+    let deserialized: EncodableRepository = serde_yaml::from_str(&y_rep).unwrap();
 
     //println!("deserialized = {:#?}", deserialized);
 }

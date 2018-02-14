@@ -43,7 +43,6 @@ pub struct NewPackage {
 #[derive(Queryable)]
 pub struct Release {
     id: i32,
-    tags: Option<String>,
     url: Option<String>,
     version: String,
 }
@@ -51,7 +50,6 @@ pub struct Release {
 #[derive(Insertable)]
 #[table_name="releases"]
 pub struct NewRelease<'a> {
-    tags: &'a str,
     url: &'a str,
     version: &'a str,
 }

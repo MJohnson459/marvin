@@ -14,7 +14,6 @@ CREATE TABLE packages (
 
 CREATE TABLE releases (
   id SERIAL PRIMARY KEY,
-  tags VARCHAR,
   url VARCHAR,
   version VARCHAR NOT NULL
 );
@@ -37,4 +36,11 @@ CREATE TABLE repositories (
   release SERIAL REFERENCES releases,
   source SERIAL REFERENCES sources,
   status VARCHAR
+);
+
+CREATE TABLE tags (
+  id SERIAL PRIMARY KEY,
+  release_id SERIAL,
+  name VARCHAR NOT NULL,
+  value VARCHAR NOT NULL
 );

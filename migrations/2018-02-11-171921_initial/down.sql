@@ -1,5 +1,6 @@
 -- This file should undo anything in `up.sql`
 
+DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS repositories;
 DROP TABLE IF EXISTS package_releases;
 DROP TABLE IF EXISTS sources;

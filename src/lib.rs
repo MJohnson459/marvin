@@ -1,15 +1,9 @@
 pub mod schema;
 pub mod models;
-pub mod importer;
 
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
-
-#[macro_use]
-extern crate serde_derive;
-extern crate serde;
-extern crate serde_yaml;
 
 use std::collections::BTreeMap as Map;
 use diesel::prelude::*;
@@ -18,6 +12,8 @@ use dotenv::dotenv;
 use std::env;
 use std::io;
 
+use models::*;
+
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
 
@@ -25,4 +21,22 @@ pub fn establish_connection() -> PgConnection {
         .expect("DATABASE_URL must be set");
     PgConnection::establish(&database_url)
         .expect(&format!("Error connecting to {}", database_url))
+}
+
+pub fn list_packages(conn: &PgConnection) {
+    use schema::packages::dsl::*;
+
+    let result = packages.load::<Package>(conn)
+        .expect("Error loading packages");
+
+    println!("Displaying {} packages", result.len());
+}
+
+pub fn list_documentation(conn: &PgConnection) {
+    use schema::documentation::dsl::*;
+
+    let result = documentation.load::<Documentation>(conn)
+        .expect("Error loading packages");
+
+    println!("Displaying {} documents", result.len());
 }

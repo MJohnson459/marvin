@@ -1,12 +1,22 @@
-extern crate diesel;
-extern crate serde_yaml;
+#[macro_use]
+extern crate serde_derive;
 
-use std::collections::BTreeMap as Map;
-use diesel::prelude::*;
+extern crate diesel;
+extern crate marvin;
+extern crate serde;
+extern crate serde_yaml;
+extern crate dotenv;
+
 use diesel::pg::PgConnection;
+use diesel::prelude::*;
 use dotenv::dotenv;
+use std::collections::BTreeMap as Map;
 use std::env;
+use std::fs;
 use std::io;
+use std::path::Path;
+
+use marvin::*;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct EncodableDistribution {
@@ -100,6 +110,7 @@ fn insert_documentation(conn: &PgConnection, documentation: &Option<EncodableDoc
 
 pub fn push_distribution(conn: &PgConnection, distribution: &EncodableDistribution) {
 
+    // TODO switch to batch import
     for (key, value) in distribution.repositories.iter() {
         let new_doc = insert_documentation(conn, &value.doc);
 
@@ -109,4 +120,16 @@ pub fn push_distribution(conn: &PgConnection, distribution: &EncodableDistributi
         //.values(&new_docs)
         //.get_result(conn)
         //.expect("Error saving new documentation")
+}
+
+fn main() {
+    // TODO error handling needed
+    let path = Path::new("./external/rosdistro/kinetic/distribution.yaml");
+    println!("Path = {:?}", fs::canonicalize(&path));
+    let distribution = load_distribution(&path.to_str().unwrap()).unwrap();
+    //println!("distribution = {:#?}", distribution);
+
+    let connection = establish_connection();
+
+    push_distribution(&connection, &distribution);
 }

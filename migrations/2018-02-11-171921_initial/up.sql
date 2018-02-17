@@ -1,46 +1,49 @@
 -- Your SQL goes here
 
-CREATE TABLE documentation (
-  id SERIAL PRIMARY KEY,
-  vcs VARCHAR NOT NULL,
-  url VARCHAR NOT NULL,
-  version VARCHAR NOT NULL
-);
-
 CREATE TABLE packages (
   id SERIAL PRIMARY KEY,
   name VARCHAR NOT NULL
+  updated_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  downloads SERIAL NOT NULL,
+  description VARCHAR,
+  homepage VARCHAR,
+  documentation VARCHAR,
+  license VARCHAR,
+  repository VARCHAR,
+  max_upload_size SERIAL
 );
 
-CREATE TABLE releases (
+CREATE TABLE package_owners (
+  package_id SERIAL NOT NULL,
+  owner_id SERIAL NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  created_by SERIAL,
+  deleted BOOL NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
+
+CREATE TABLE versions (
   id SERIAL PRIMARY KEY,
-  url VARCHAR,
-  version VARCHAR NOT NULL
+  package_id SERIAL,
+  num VARCHAR NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  downloads SERIAL NOT NULL,
+  yanked BOOL NOT NULL,
+  license VARCHAR
 );
 
-CREATE TABLE sources (
+CREATE TABLE keywords (
   id SERIAL PRIMARY KEY,
-  vcs VARCHAR NOT NULL,
-  url VARCHAR NOT NULL,
-  version VARCHAR NOT NULL
+  keyword VARCHAR NOT NULL,
+  package_cnt SERIAL NOT NULL,
+  created_at TIMESTAMP NOT NULL
 );
 
-CREATE TABLE package_releases (
-  package_id SERIAL REFERENCES packages,
-  release_id SERIAL REFERENCES releases
-);
-
-CREATE TABLE repositories (
-  name VARCHAR PRIMARY KEY,
-  documentation SERIAL REFERENCES documentation,
-  release SERIAL REFERENCES releases,
-  source SERIAL REFERENCES sources,
-  status VARCHAR
-);
-
-CREATE TABLE tags (
+CREATE TABLE users (
   id SERIAL PRIMARY KEY,
-  release_id SERIAL,
-  name VARCHAR NOT NULL,
-  value VARCHAR NOT NULL
+  email VARCHAR,
+  name VARCHAR
 );
+

@@ -1,9 +1,7 @@
 -- This file should undo anything in `up.sql`
 
-DROP TABLE IF EXISTS tags;
-DROP TABLE IF EXISTS repositories;
-DROP TABLE IF EXISTS package_releases;
-DROP TABLE IF EXISTS sources;
-DROP TABLE IF EXISTS releases;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS keywords;
+DROP TABLE IF EXISTS versions;
+DROP TABLE IF EXISTS package_owners;
 DROP TABLE IF EXISTS packages;
-DROP TABLE IF EXISTS documentation;

@@ -4,6 +4,7 @@ use diesel::prelude::*;
 use diesel;
 use semver;
 use url::Url;
+use std::error::Error;
 
 use schema::*;
 
@@ -64,4 +65,14 @@ pub struct NewPackage<'a> {
     pub license: Option<&'a str>,
     pub repository: Option<&'a str>,
     pub max_upload_size: Option<i32>,
+}
+
+impl<'a> NewPackage<'a> {
+    pub fn create_or_update(mut self,
+                            conn: &PgConnection,
+                            uploader: i32,
+                            ) -> Result<Package, Error> {
+        println!("(mock) Uploading package");
+
+    }
 }

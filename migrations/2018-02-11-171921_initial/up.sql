@@ -9,6 +9,7 @@ CREATE TABLE packages (
   description VARCHAR,
   homepage VARCHAR,
   documentation VARCHAR,
+  textsearchable_index_col TSVECTOR NOT NULL,
   license VARCHAR,
   repository VARCHAR,
   max_upload_size SERIAL

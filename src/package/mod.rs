@@ -1,10 +1,10 @@
 use chrono::{NaiveDate, NaiveDateTime};
-use diesel::associations::Identifiable;
 use diesel::prelude::*;
 use diesel;
-use semver;
-use url::Url;
-use std::error::Error;
+// use semver;
+// use url::Url;
+//
+// use util::MarvinResult;
 
 use schema::*;
 
@@ -71,8 +71,8 @@ impl<'a> NewPackage<'a> {
     pub fn create_or_update(mut self,
                             conn: &PgConnection,
                             uploader: i32,
-                            ) -> Result<Package, Error> {
+                            ) { 
+         // -> MarvinResult<Package> {
         println!("(mock) Uploading package");
-
     }
 }

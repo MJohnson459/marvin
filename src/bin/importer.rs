@@ -84,24 +84,24 @@ fn insert_documentation(
     conn: &PgConnection,
     documentation: &Option<EncodableDocumentation>,
 ) -> Option<i32> {
-    use schema::documentation;
-    use models::{Documentation, NewDocumentation};
-    if let Some(ref doc) = *documentation {
-        let new_doc = NewDocumentation {
-            vcs: doc.vcs.as_str(),
-            url: doc.url.as_str(),
-            version: doc.version.as_str(),
-        };
-
-        let result: diesel::QueryResult<Documentation> = diesel::insert_into(documentation::table)
-            .values(&new_doc)
-            .get_result(conn);
-
-        match result {
-            Ok(val) => Some(val.id),
-            Err(_) => None,
-        };
-    }
+    // use schema::documentation;
+    // use models::{Documentation, NewDocumentation};
+    // if let Some(ref doc) = *documentation {
+    //     let new_doc = NewDocumentation {
+    //         vcs: doc.vcs.as_str(),
+    //         url: doc.url.as_str(),
+    //         version: doc.version.as_str(),
+    //     };
+    //
+    //     let result: diesel::QueryResult<Documentation> = diesel::insert_into(documentation::table)
+    //         .values(&new_doc)
+    //         .get_result(conn);
+    //
+    //     match result {
+    //         Ok(val) => Some(val.id),
+    //         Err(_) => None,
+    //     };
+    // }
 
     None
 }

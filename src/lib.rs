@@ -1,18 +1,26 @@
-pub mod schema;
-pub mod models;
+
+#![recursion_limit="128"]
 
 #[macro_use]
 extern crate diesel;
+extern crate diesel_full_text_search;
 extern crate dotenv;
+extern crate chrono;
+extern crate semver;
+extern crate url;
 
-use std::collections::BTreeMap as Map;
 use diesel::prelude::*;
 use diesel::pg::PgConnection;
 use dotenv::dotenv;
 use std::env;
-use std::io;
 
 use models::*;
+
+pub mod models;
+pub mod package;
+pub mod schema;
+pub mod util;
+
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
@@ -23,20 +31,13 @@ pub fn establish_connection() -> PgConnection {
 
 pub fn list_packages(conn: &PgConnection) {
     use schema::packages::dsl::*;
+    use package;
 
-    let result = packages
+    let query = packages.select(package::ALL_COLUMNS);
+
+    let result = query
         .load::<Package>(conn)
         .expect("Error loading packages");
 
     println!("Displaying {} packages", result.len());
-}
-
-pub fn list_documentation(conn: &PgConnection) {
-    use schema::documentation::dsl::*;
-
-    let result = documentation
-        .load::<Documentation>(conn)
-        .expect("Error loading packages");
-
-    println!("Displaying {} documents", result.len());
 }

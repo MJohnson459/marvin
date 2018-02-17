@@ -71,8 +71,37 @@ impl<'a> NewPackage<'a> {
     pub fn create_or_update(mut self,
                             conn: &PgConnection,
                             uploader: i32,
-                            ) { 
+                            ) {
          // -> MarvinResult<Package> {
+
+        println!("(mock) Decided to upload package");
+        let possible_package = self.save_new_package(conn, uploader);
+
+        match possible_package {
+            Ok(_) => {},
+            Err(err) => println!("Error: {:?}", err),
+        }
+    }
+
+    fn save_new_package(&self,
+                            conn: &PgConnection,
+                            user_id: i32) -> QueryResult<Option<Package>> {
+        use schema::packages::dsl::*;
+
         println!("(mock) Uploading package");
+        conn.transaction(|| {
+            let maybe_inserted = diesel::insert_into(packages)
+                .values(self)
+                .on_conflict_do_nothing()
+                .returning(ALL_COLUMNS)
+                .get_result::<Package>(conn)
+                .optional()?;
+
+            if let Some(ref package) = maybe_inserted {
+                // TODO Insert owner
+            }
+
+            Ok(maybe_inserted)
+        })
     }
 }

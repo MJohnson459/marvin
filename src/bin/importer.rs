@@ -2,10 +2,10 @@
 extern crate serde_derive;
 
 extern crate diesel;
+extern crate dotenv;
 extern crate marvin;
 extern crate serde;
 extern crate serde_yaml;
-extern crate dotenv;
 
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
@@ -22,15 +22,13 @@ use marvin::*;
 pub struct EncodableDistribution {
     release_platforms: Map<String, Vec<String>>,
     repositories: Map<String, EncodableRepository>,
-    #[serde(rename = "type")]
-    type_name: String,
+    #[serde(rename = "type")] type_name: String,
     version: u32,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 struct EncodableDocumentation {
-    #[serde(rename = "type")]
-    vcs: String,
+    #[serde(rename = "type")] vcs: String,
     url: String,
     version: String,
 }
@@ -50,8 +48,7 @@ struct EncodableRelease {
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 struct EncodableSource {
-    #[serde(rename = "type")]
-    vcs: String,
+    #[serde(rename = "type")] vcs: String,
     url: String,
     version: String,
 }
@@ -64,10 +61,8 @@ struct EncodableRepository {
     status: Option<String>,
 }
 
-
 pub fn load_distribution(path: &str) -> Result<EncodableDistribution, String> {
     let contents = read_distribution(path).unwrap();
-
 
     let distribution: EncodableDistribution = serde_yaml::from_str(&contents).unwrap();
 
@@ -85,7 +80,10 @@ pub fn read_distribution(path: &str) -> io::Result<String> {
     Ok(contents)
 }
 
-fn insert_documentation(conn: &PgConnection, documentation: &Option<EncodableDocumentation>) -> Option<i32> {
+fn insert_documentation(
+    conn: &PgConnection,
+    documentation: &Option<EncodableDocumentation>,
+) -> Option<i32> {
     use schema::documentation;
     use models::{Documentation, NewDocumentation};
     if let Some(ref doc) = *documentation {
@@ -100,8 +98,8 @@ fn insert_documentation(conn: &PgConnection, documentation: &Option<EncodableDoc
             .get_result(conn);
 
         match result {
-                Ok(val) => Some(val.id),
-                Err(_) => None,
+            Ok(val) => Some(val.id),
+            Err(_) => None,
         };
     }
 
@@ -109,17 +107,15 @@ fn insert_documentation(conn: &PgConnection, documentation: &Option<EncodableDoc
 }
 
 pub fn push_distribution(conn: &PgConnection, distribution: &EncodableDistribution) {
-
     // TODO switch to batch import
     for (key, value) in distribution.repositories.iter() {
         let new_doc = insert_documentation(conn, &value.doc);
-
     }
 
     //diesel::insert_into(documentation::table)
-        //.values(&new_docs)
-        //.get_result(conn)
-        //.expect("Error saving new documentation")
+    //.values(&new_docs)
+    //.get_result(conn)
+    //.expect("Error saving new documentation")
 }
 
 fn main() {

@@ -1,5 +1,5 @@
-extern crate marvin;
 extern crate diesel;
+extern crate marvin;
 
 use marvin::*;
 

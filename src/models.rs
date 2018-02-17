@@ -1,1 +1,1 @@
-pub use package::{Package, NewPackage}
+pub use package::{NewPackage, Package};

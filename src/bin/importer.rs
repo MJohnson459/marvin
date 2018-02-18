@@ -47,8 +47,7 @@ struct EncodableTag {
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 struct EncodableRelease {
-    #[serde(default)]
-    packages: Vec<String>,
+    #[serde(default)] packages: Vec<String>,
     tags: EncodableTag,
     url: String,
     version: Option<String>,
@@ -94,55 +93,62 @@ impl EncodableRelease {
     }
 }
 
+fn create_new_package<'a>(
+    name: &'a str,
+    doc_url: Option<&'a str>,
+    source_url: Option<&'a str>,
+) -> NewPackage<'a> {
+    NewPackage {
+        name: name,
+        description: None,
+        homepage: None,
+        documentation: doc_url,
+        license: None,
+        repository: source_url,
+        max_upload_size: None,
+    }
+}
+
 impl EncodableDistribution {
     fn to_package_list(&self) -> Option<Vec<NewPackage>> {
         // name of repo == package
         // if release.packages is not empty create list of packages
 
         for (name, repository) in self.repositories.iter() {
+            let doc_url = if let Some(ref documentation) = repository.doc {
+                Some(documentation.url.as_str())
+            } else {
+                None
+            };
+
+            let source_url = if let Some(ref source) = repository.source {
+                Some(source.url.as_str())
+            } else {
+                None
+            };
+
             if let Some(ref release) = repository.release {
                 if !release.packages.is_empty() {
+                    // Multiple packages in the repo
+                    // One must be named the same as the repo
                     for package in release.packages.iter() {
-                        println!("Package: {:?}", package);
+                        let new_package = create_new_package(package, doc_url, source_url);
+                        println!("Package: {:?}", new_package);
                     }
                 } else {
                     // Only one package
+                    let new_package = create_new_package(name, doc_url, source_url);
                     println!("Package: {:?}", name);
                 }
             } else {
+                // Only one package
+                let new_package = create_new_package(name, doc_url, source_url);
                 println!("Package: {:?}", name);
             }
         }
 
         None
     }
-}
-
-fn insert_documentation(
-    _conn: &PgConnection,
-    _documentation: &Option<EncodableDocumentation>,
-) -> Option<i32> {
-
-    // use schema::documentation;
-    // use models::{Documentation, NewDocumentation};
-    // if let Some(ref doc) = *documentation {
-    //     let new_doc = NewDocumentation {
-    //         vcs: doc.vcs.as_str(),
-    //         url: doc.url.as_str(),
-    //         version: doc.version.as_str(),
-    //     };
-    //
-    //     let result: diesel::QueryResult<Documentation> = diesel::insert_into(documentation::table)
-    //         .values(&new_doc)
-    //         .get_result(conn);
-    //
-    //     match result {
-    //         Ok(val) => Some(val.id),
-    //         Err(_) => None,
-    //     };
-    // }
-
-    None
 }
 
 fn publish_package_list(_conn: &PgConnection, _package_list: &Vec<NewPackage>) {

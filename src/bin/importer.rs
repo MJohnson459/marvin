@@ -14,16 +14,16 @@ extern crate serde;
 extern crate serde_yaml;
 
 use diesel::pg::PgConnection;
-// use diesel::prelude::*;
-// use dotenv::dotenv;
+use diesel::prelude::*;
+use dotenv::dotenv;
 use std::collections::BTreeMap as Map;
-// use std::env;
+use std::env;
 use std::fs;
 use std::io;
 use std::path::Path;
 
 use marvin::*;
-use marvin::models::NewPackage;
+use marvin::models::{NewPackage, Package};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 struct EncodableDistribution {
@@ -110,9 +110,11 @@ fn create_new_package<'a>(
 }
 
 impl EncodableDistribution {
-    fn to_package_list(&self) -> Option<Vec<NewPackage>> {
+    fn to_package_list(&self) -> Vec<NewPackage> {
         // name of repo == package
         // if release.packages is not empty create list of packages
+
+        let mut package_list: Vec<NewPackage> = Vec::new();
 
         for (name, repository) in self.repositories.iter() {
             let doc_url = if let Some(ref documentation) = repository.doc {
@@ -132,32 +134,30 @@ impl EncodableDistribution {
                     // Multiple packages in the repo
                     // One must be named the same as the repo
                     for package in release.packages.iter() {
-                        let new_package = create_new_package(package, doc_url, source_url);
-                        println!("Package: {:?}", new_package);
+                        package_list.push(create_new_package(package, doc_url, source_url));
                     }
                 } else {
                     // Only one package
-                    let new_package = create_new_package(name, doc_url, source_url);
-                    println!("Package: {:?}", name);
+                    package_list.push(create_new_package(name, doc_url, source_url));
                 }
             } else {
                 // Only one package
-                let new_package = create_new_package(name, doc_url, source_url);
-                println!("Package: {:?}", name);
+                package_list.push(create_new_package(name, doc_url, source_url));
             }
         }
 
-        None
+        package_list
     }
 }
 
-fn publish_package_list(_conn: &PgConnection, _package_list: &Vec<NewPackage>) {
+fn publish_package_list(conn: &PgConnection, package_list: &Vec<NewPackage>) {
     // TODO use batch import
+    use schema::packages;
 
-    //diesel::insert_into(documentation::table)
-    //.values(&new_docs)
-    //.get_result(conn)
-    //.expect("Error saving new documentation")
+    diesel::insert_into(packages::table)
+        .values(package_list)
+        .execute(conn)
+        .expect("Error saving new packages");
 }
 
 fn main() {
@@ -167,8 +167,12 @@ fn main() {
     let distribution = load_distribution(&path.to_str().unwrap()).unwrap();
     //println!("distribution = {:#?}", distribution);
 
-    if let Some(package_list) = distribution.to_package_list() {
-        // let connection = establish_connection();
-        // publish_package_list(&connection, &package_list);
+    let package_list = distribution.to_package_list();
+
+    for package in package_list.iter() {
+        println!("Package: {:?}", package);
     }
+
+    let connection = establish_connection();
+    publish_package_list(&connection, &package_list);
 }

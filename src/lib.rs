@@ -35,5 +35,10 @@ pub fn list_packages(conn: &PgConnection) {
 
     let result = query.load::<Package>(conn).expect("Error loading packages");
 
+
+    for package in result.iter() {
+        println!("Package: {:?}", package);
+    }
+
     println!("Displaying {} packages", result.len());
 }

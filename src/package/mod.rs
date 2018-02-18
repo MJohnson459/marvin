@@ -56,7 +56,7 @@ pub const MAX_NAME_LENGTH: usize = 64;
 type All = diesel::dsl::Select<packages::table, AllColumns>;
 
 #[derive(Debug, Default, Insertable)]
-#[table_name="packages"]
+#[table_name = "packages"]
 pub struct NewPackage<'a> {
     pub name: &'a str,
     pub description: Option<&'a str>,
@@ -68,24 +68,19 @@ pub struct NewPackage<'a> {
 }
 
 impl<'a> NewPackage<'a> {
-    pub fn create_or_update(mut self,
-                            conn: &PgConnection,
-                            uploader: i32,
-                            ) {
-         // -> MarvinResult<Package> {
+    pub fn create_or_update(mut self, conn: &PgConnection, uploader: i32) {
+        // -> MarvinResult<Package> {
 
         println!("(mock) Decided to upload package");
         let possible_package = self.save_new_package(conn, uploader);
 
         match possible_package {
-            Ok(_) => {},
+            Ok(_) => {}
             Err(err) => println!("Error: {:?}", err),
         }
     }
 
-    fn save_new_package(&self,
-                            conn: &PgConnection,
-                            user_id: i32) -> QueryResult<Option<Package>> {
+    fn save_new_package(&self, conn: &PgConnection, user_id: i32) -> QueryResult<Option<Package>> {
         use schema::packages::dsl::*;
 
         println!("(mock) Uploading package");

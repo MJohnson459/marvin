@@ -27,7 +27,6 @@ impl<T: MarvinError> MarvinError for Box<T> {
 
 pub type MarvinResult<T> = Result<T, Box<MarvinError>>;
 
-
 struct ConcreteMarvinError {
     description: String,
     detail: Option<String>,
@@ -42,4 +41,3 @@ impl MarvinError for ConcreteMarvinError {
         self.cause.as_ref().map(|c| &**c)
     }
 }
-

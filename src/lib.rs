@@ -1,11 +1,10 @@
+#![recursion_limit = "128"]
 
-#![recursion_limit="128"]
-
+extern crate chrono;
 #[macro_use]
 extern crate diesel;
 extern crate diesel_full_text_search;
 extern crate dotenv;
-extern crate chrono;
 extern crate semver;
 extern crate url;
 
@@ -21,7 +20,6 @@ pub mod package;
 pub mod schema;
 pub mod util;
 
-
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
 
@@ -35,9 +33,7 @@ pub fn list_packages(conn: &PgConnection) {
 
     let query = packages.select(package::ALL_COLUMNS);
 
-    let result = query
-        .load::<Package>(conn)
-        .expect("Error loading packages");
+    let result = query.load::<Package>(conn).expect("Error loading packages");
 
     println!("Displaying {} packages", result.len());
 }

@@ -239,10 +239,4 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(
-    keywords,
-    package_owners,
-    packages,
-    users,
-    versions,
-);
+allow_tables_to_appear_in_same_query!(keywords, package_owners, packages, users, versions,);

@@ -7,6 +7,7 @@ use diesel;
 // use util::MarvinResult;
 
 use schema::*;
+use views::EncodablePackage;
 
 #[derive(Debug, Clone, Queryable)]
 pub struct Package {
@@ -98,5 +99,37 @@ impl<'a> NewPackage<'a> {
 
             Ok(maybe_inserted)
         })
+    }
+}
+
+impl Package {
+    pub fn minimal_encodable(self) -> EncodablePackage {
+
+        let Package {
+            id,
+            name,
+            updated_at,
+            created_at,
+            downloads,
+            description,
+            homepage,
+            documentation,
+            license,
+            repository,
+            ..
+        } = self;
+
+        EncodablePackage {
+            id: name.clone(),
+            name: name.clone(),
+            updated_at: updated_at,
+            created_at: created_at,
+            downloads: downloads,
+            description: description,
+            homepage: homepage,
+            documentation: documentation,
+            license: license,
+            repository: repository,
+        }
     }
 }

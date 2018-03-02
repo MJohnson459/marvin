@@ -1,5 +1,8 @@
 #![recursion_limit = "128"]
 
+#[macro_use]
+extern crate serde_derive;
+extern crate serde;
 extern crate chrono;
 #[macro_use]
 extern crate diesel;
@@ -17,6 +20,7 @@ use models::*;
 
 pub mod models;
 pub mod package;
+pub mod views;
 pub mod schema;
 pub mod util;
 
@@ -27,18 +31,10 @@ pub fn establish_connection() -> PgConnection {
     PgConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
 }
 
-pub fn list_packages(conn: &PgConnection) {
+pub fn list_packages(conn: &PgConnection) -> Vec<Package> {
     use schema::packages::dsl::*;
     use package;
 
     let query = packages.select(package::ALL_COLUMNS);
-
-    let result = query.load::<Package>(conn).expect("Error loading packages");
-
-
-    for package in result.iter() {
-        println!("Package: {:?}", package);
-    }
-
-    println!("Displaying {} packages", result.len());
+    query.load::<Package>(conn).expect("Error loading packages")
 }

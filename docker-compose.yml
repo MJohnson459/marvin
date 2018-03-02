@@ -1,0 +1,49 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:10-alpine
+    environment:
+      POSTGRES_DB: marvin_registry
+      POSTRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  backend:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    environment:
+      DATABASE_URL: postgres://postgres:password@postgres/marvin_registry
+      SESSION_KEY: badkeyabcdefghijklmnopqrstuvwxyzabcdef
+    links:
+      - postgres
+    ports:
+      - 8888:8888
+    volumes:
+      # Mount the src/ directory so we don't have to rebuild the Docker image
+      # when we want to change some code
+      - ./src:/app/src:ro
+
+      - index:/app/tmp
+      - marvin-cache:/usr/local/marvin/registry
+      - target-cache:/app/target
+  # frontend:
+  #   build:
+  #     context: .
+  #     dockerfile: frontend.Dockerfile
+  #   entrypoint: npm run start --proxy http://backend:8888
+  #   links:
+  #     - backend
+  #   ports:
+  #     - 4200:4200
+  #   volumes:
+  #     # Mount the app/ directory so live reload works
+  #     - ./app:/app/app:ro
+
+volumes:
+  postgres-data:
+  marvin-cache:
+  target-cache:
+  index:

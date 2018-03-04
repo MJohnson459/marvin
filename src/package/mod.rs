@@ -1,4 +1,4 @@
-use chrono::{NaiveDate, NaiveDateTime};
+use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use diesel;
 // use semver;
@@ -9,6 +9,10 @@ use diesel;
 use schema::*;
 use views::EncodablePackage;
 
+/// Standard package that can be queried from the database.
+///
+/// Can be encoded as a NewPackage for insertion or an
+/// EncodablePackage for serde encoding
 #[derive(Debug, Clone, Queryable)]
 pub struct Package {
     pub id: i32,

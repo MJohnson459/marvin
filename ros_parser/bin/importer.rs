@@ -25,6 +25,32 @@ use std::path::Path;
 use marvin::*;
 use marvin::models::{NewPackage, Package};
 
+fn main() {
+    // TODO error handling needed
+    let path = Path::new("./external/rosdistro/kinetic/distribution.yaml");
+    println!("Path = {:?}", fs::canonicalize(&path));
+    let distribution = load_distribution(&path.to_str().unwrap()).unwrap();
+    let package_list = distribution.to_package_list();
+
+    for package in package_list.iter() {
+        println!("Package: {:?}", package);
+    }
+
+    let connection = marvin::establish_connection();
+    publish_package_list(&connection, &package_list);
+}
+
+fn publish_package_list(conn: &PgConnection, package_list: &Vec<NewPackage>) {
+    // TODO use batch import
+    use schema::packages;
+
+    diesel::insert_into(packages::table)
+        .values(package_list)
+        .execute(conn)
+        .expect("Error saving new packages");
+}
+
+
 #[derive(Serialize, Deserialize, Debug, Default)]
 struct EncodableDistribution {
     release_platforms: Map<String, Vec<String>>,
@@ -150,29 +176,3 @@ impl EncodableDistribution {
     }
 }
 
-fn publish_package_list(conn: &PgConnection, package_list: &Vec<NewPackage>) {
-    // TODO use batch import
-    use schema::packages;
-
-    diesel::insert_into(packages::table)
-        .values(package_list)
-        .execute(conn)
-        .expect("Error saving new packages");
-}
-
-fn main() {
-    // TODO error handling needed
-    let path = Path::new("./external/rosdistro/kinetic/distribution.yaml");
-    println!("Path = {:?}", fs::canonicalize(&path));
-    let distribution = load_distribution(&path.to_str().unwrap()).unwrap();
-    //println!("distribution = {:#?}", distribution);
-
-    let package_list = distribution.to_package_list();
-
-    for package in package_list.iter() {
-        println!("Package: {:?}", package);
-    }
-
-    let connection = establish_connection();
-    publish_package_list(&connection, &package_list);
-}

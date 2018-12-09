@@ -1,27 +1,8 @@
-[package]
-name = "marvin"
-version = "0.1.0"
-authors = ["Michael Johnson <mjohnson459@gmail.com>"]
+[workspace]
 
-[dependencies]
-chrono = { version="", features = ["serde"] }
-diesel = { version = "1.1", features = ["postgres", "serde_json", "chrono"] }
-diesel_full_text_search = "1.0"
-dotenv = "0.10"
-semver = "0.9"
-serde = "1.0"
-serde_derive = "1.0"
-serde_yaml = "0.7"
-url = "1.6"
-rocket = "0.3.6"
-rocket_codegen = "0.3.6"
-rocket_contrib = "0.3.6"
-r2d2-diesel = "1.0"
-r2d2 = "0.8"
-
-
-[build-dependencies]
-diesel = { version = "1.1", features = ["postgres"] }
-diesel_migrations = { version = "1.1", features = ["postgres"] }
-dotenv = "0.10"
-
+members = [
+    "marvin_backend",
+    "marvin_postgres",
+    "marvin_server",
+    "ros_parser",
+]

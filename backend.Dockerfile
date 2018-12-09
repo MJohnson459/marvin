@@ -1,4 +1,4 @@
-FROM rust:1.24-stretch
+FROM rust:1.31-stretch
 
 RUN apt-get update \
     && apt-get install -y postgresql cmake \

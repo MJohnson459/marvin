@@ -1,7 +1,7 @@
 [workspace]
 
 members = [
-    "marvin_backend",
+    "marvin_core",
     "marvin_postgres",
     "marvin_server",
     "ros_parser",

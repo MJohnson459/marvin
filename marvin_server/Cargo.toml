@@ -5,7 +5,7 @@ authors = ["Michael Johnson <mjohnson459@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-marvin_backend = { path = "../marvin_backend" }
+marvin_core = { path = "../marvin_core" }
 marvin_postgres = { path = "../marvin_postgres" }
 
 chrono = { version = "0.4.6", features = ["serde"] }

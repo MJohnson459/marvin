@@ -1,5 +1,5 @@
 [package]
-name = "marvin_backend"
+name = "marvin_core"
 version = "0.1.0"
 authors = ["Michael Johnson <mjohnson459@gmail.com>"]
 edition = "2018"

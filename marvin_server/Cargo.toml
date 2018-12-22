@@ -6,17 +6,7 @@ edition = "2018"
 
 [dependencies]
 marvin_core = { path = "../marvin_core" }
-marvin_postgres = { path = "../marvin_postgres" }
+ros_parser = { path = "../ros_parser" }
 
-chrono = { version = "0.4.6", features = ["serde"] }
-dotenv = "0.13.0"
-semver = "0.9.0"
-serde = "1.0.80"
-serde_derive = "1.0.80"
-serde_yaml = "0.8.8"
 url = "1.7.2"
 rocket = "0.4.0"
-rocket_codegen = "0.4.0"
-rocket_contrib = "0.4.0"
-r2d2-diesel = "1.0.0"
-r2d2 = "0.8.3"

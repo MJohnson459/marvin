@@ -1,17 +1,15 @@
-
+#[derive(Debug)]
 pub struct Package {
-    id: i32,
-    name: String,
-    status: String,
+    pub name: String,
+    pub status: String,
 }
 
 pub trait PackageReader {
-    fn get_package(id: i32) -> Package;
-    fn search_package_name(name: &str) -> Package;
+    fn search_package_name(&self, name: &str) -> Option<Package>;
 }
 
 pub trait PackageWriter {
-    fn save_package(name: &str, status: &str) -> Package;
+    fn save_package(&mut self, name: &str, status: &str) -> Package;
 }
 
 #[cfg(test)]
